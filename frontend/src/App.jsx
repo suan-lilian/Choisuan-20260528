@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import OnboardingModal from './components/OnboardingModal';
+import ProfileModal from './components/ProfileModal';
 import ProductGrid from './components/ProductGrid';
 import CartPanel from './components/CartPanel';
 import { buildAICart } from './utils/aiCartUtils';
@@ -11,6 +12,7 @@ export default function App() {
   const [userProfile, setUserProfile] = useState(null);
   const [cart, setCart] = useState([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [buildingCart, setBuildingCart] = useState(false);
 
   useEffect(() => {
@@ -46,7 +48,8 @@ export default function App() {
     setBuildingCart(false);
   };
 
-  const handleProfileReset = () => {
+  const handleProfileEdit = () => {
+    setShowProfileModal(false);
     localStorage.removeItem('groceryAI_profile');
     setUserProfile(null);
     setCart([]);
@@ -72,11 +75,19 @@ export default function App() {
       <Header
         cartCount={totalItems}
         userProfile={userProfile}
-        onProfileReset={handleProfileReset}
+        onProfileClick={() => setShowProfileModal(true)}
       />
 
       {showOnboarding && (
         <OnboardingModal onComplete={handleOnboardingComplete} />
+      )}
+
+      {showProfileModal && userProfile && (
+        <ProfileModal
+          profile={userProfile}
+          onClose={() => setShowProfileModal(false)}
+          onEdit={handleProfileEdit}
+        />
       )}
 
       {buildingCart && (

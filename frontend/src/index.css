@@ -430,6 +430,24 @@ a { text-decoration: none; }
 .modal-next-btn:hover { background: #1e4f39; }
 .modal-next-btn:disabled { background: var(--border); cursor: not-allowed; }
 
+.modal-close-btn {
+  position: absolute; top: 16px; right: 20px;
+  font-size: 16px; color: var(--text-light); background: none; border: none;
+  cursor: pointer; line-height: 1; padding: 4px 8px; border-radius: 6px;
+}
+.modal-close-btn:hover { background: var(--bg); color: var(--text-dark); }
+.profile-modal-card { position: relative; }
+
+.profile-rows { display: flex; flex-direction: column; gap: 0; margin-bottom: 4px; }
+.profile-row {
+  display: flex; align-items: flex-start; gap: 12px; padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.profile-row:last-child { border-bottom: none; }
+.profile-label { color: var(--text-mid); min-width: 80px; flex-shrink: 0; }
+.profile-value { color: var(--text-dark); font-weight: 500; word-break: break-all; }
+
 /* ─── BUILDING CART OVERLAY ─── */
 .building-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.45);

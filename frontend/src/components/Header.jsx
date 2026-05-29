@@ -1,4 +1,14 @@
-export default function Header({ cartCount, userProfile, onProfileReset }) {
+export default function Header({ cartCount, userProfile, onProfileClick }) {
+  const nickname = userProfile?.nickname;
+  const budgetLabel =
+    userProfile?.budget === 'budget' ? '알뜰' :
+    userProfile?.budget === 'premium' ? '프리미엄' : '균형';
+  const familyLabel =
+    userProfile?.familySize === 1 ? '1인' :
+    userProfile?.familySize === 5 ? '5인+' :
+    userProfile?.familySize === 4 ? '3~4인' :
+    `${userProfile?.familySize || 2}인`;
+
   return (
     <header className="header">
       <div className="header-logo">
@@ -14,11 +24,10 @@ export default function Header({ cartCount, userProfile, onProfileReset }) {
         </button>
 
         {userProfile && (
-          <button className="header-profile-btn" onClick={onProfileReset}>
+          <button className="header-profile-btn" onClick={onProfileClick}>
             <div className="avatar">👤</div>
             <span>
-              {userProfile.familySize === 1 ? '1인' : `${userProfile.familySize}인`} ·{' '}
-              {userProfile.budget === 'budget' ? '알뜰' : userProfile.budget === 'premium' ? '프리미엄' : '균형'}
+              {nickname ? nickname : `${familyLabel} · ${budgetLabel}`}
             </span>
           </button>
         )}

@@ -46,7 +46,13 @@ export default async function handler(req, res) {
   const { message, cart = [], profile = {} } = req.body;
   if (!message?.trim()) return res.status(400).json({ error: 'message required' });
 
-  const { familySize = 2, budget = 'balanced', allergies = [], diet = 'normal' } = profile;
+  const {
+    familySize = 2, budget = 'balanced', allergies = [], diet = 'normal',
+    nickname, dislikedFoods, shoppingFrequency, preferredCuisines = [],
+  } = profile;
+
+  const dietLabel = { normal: '일반식', vegetarian: '채식', diet: '다이어트', keto: '저탄고지' }[diet] || diet;
+  const freqLabel = { daily: '매일', weekly2: '주 2~3회', weekly1: '주 1회', biweekly: '격주 이상' }[shoppingFrequency] || '';
 
   const cartSummary = cart.length
     ? cart.map(i => `• ${i.query}: ${i.name.slice(0, 25)} (₩${parseInt(i.price).toLocaleString()})`).join('\n')
@@ -55,10 +61,16 @@ export default async function handler(req, res) {
   const systemPrompt = `당신은 한국 식료품 쇼핑 AI 어시스턴트입니다. 사용자의 장바구니를 관리해 줍니다.
 
 ## 사용자 프로필
+- 이름: ${nickname || '사용자'}
 - 가족 구성: ${familySize}인
 - 예산 성향: ${budget === 'budget' ? '알뜰(최저가)' : budget === 'premium' ? '프리미엄(고품질)' : '균형(가성비)'}
+- 식습관: ${dietLabel}
 - 알레르기: ${allergies.length ? allergies.join(', ') : '없음'}
-- 식습관: ${diet}
+- 기피 식품: ${dislikedFoods || '없음'}
+- 쇼핑 주기: ${freqLabel || '미설정'}
+- 선호 메뉴: ${preferredCuisines.length ? preferredCuisines.join(', ') : '미설정'}
+
+알레르기 및 기피 식품에 해당하는 재료가 포함된 상품은 절대 추천하지 마세요.
 
 ## 현재 장바구니
 ${cartSummary}
