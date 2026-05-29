@@ -41,7 +41,7 @@ export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts
     let newCart = cart;
 
     try {
-      const res = await fetch('/_/backend/api/chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed, cart, profile: userProfile }),

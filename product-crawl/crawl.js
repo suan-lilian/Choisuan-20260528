@@ -7,7 +7,7 @@ const CLIENT_SECRET = "d1rEt11WS8";
 
 async function searchShopping(query) {
   const res = await axios.get("https://openapi.naver.com/v1/search/shop.json", {
-    params: { query, display: 10, sort: "sim" },
+    params: { query, display: 20, sort: "sim" },
     headers: {
       "X-Naver-Client-Id": CLIENT_ID,
       "X-Naver-Client-Secret": CLIENT_SECRET,
