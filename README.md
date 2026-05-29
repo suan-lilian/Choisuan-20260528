@@ -4,7 +4,7 @@ AI가 사용자 성향을 파악하여 장바구니를 자동으로 구성하고
 
 ## 데모
 
-https://choisuan-20260528-nfsex992j-suan-lilians-projects.vercel.app
+https://choisuan-20260528.vercel.app
 
 ## 핵심 기능
 
