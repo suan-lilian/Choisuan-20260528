@@ -7,16 +7,46 @@ const PAYMENT_METHODS = [
   { value: 'tosspay', label: '토스페이', icon: '💙' },
 ];
 
+const DELIVERY_OPTIONS = [
+  {
+    value: 'dawn',
+    icon: '🌙',
+    label: '새벽배송',
+    desc: '내일 오전 7시 이전 도착',
+    sub: '자정 이전 주문 시',
+    fee: 3000,
+  },
+  {
+    value: 'sameday',
+    icon: '⚡',
+    label: '당일배송',
+    desc: '오늘 저녁 도착',
+    sub: '오후 2시 이전 주문 시',
+    fee: 2000,
+  },
+  {
+    value: 'normal',
+    icon: '🚚',
+    label: '일반배송',
+    desc: '영업일 기준 2~3일',
+    sub: '배송비 무료',
+    fee: 0,
+  },
+];
+
 function makeOrderId() {
   return 'ORD-' + Date.now().toString(36).toUpperCase();
 }
 
 export default function CheckoutModal({ cart, total, onClose }) {
-  const [step, setStep] = useState('confirm'); // confirm | paying | done
+  const [step, setStep] = useState('confirm');
   const [method, setMethod] = useState('card');
+  const [delivery, setDelivery] = useState('dawn');
   const [orderId] = useState(makeOrderId);
 
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
+  const deliveryFee = DELIVERY_OPTIONS.find(d => d.value === delivery)?.fee ?? 0;
+  const grandTotal = total + deliveryFee;
 
   const handlePay = () => {
     setStep('paying');
@@ -36,17 +66,23 @@ export default function CheckoutModal({ cart, total, onClose }) {
   }
 
   if (step === 'done') {
+    const deliveryOpt = DELIVERY_OPTIONS.find(d => d.value === delivery);
+    const arrivalText = delivery === 'dawn' ? '내일 오전 7시 이전' : delivery === 'sameday' ? '오늘 저녁' : '영업일 기준 2~3일 내';
     return (
       <div className="modal-overlay" onClick={onClose}>
         <div className="modal-card" style={{ textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-          <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>{delivery === 'dawn' ? '🌙' : delivery === 'sameday' ? '⚡' : '🎉'}</div>
           <h2 className="modal-title">결제 완료!</h2>
           <p className="modal-subtitle">주문이 성공적으로 접수되었어요.</p>
 
-          <div style={{ background: 'var(--bg)', borderRadius: 'var(--r-sm)', padding: '16px 20px', marginBottom: 24, textAlign: 'left' }}>
+          <div style={{ background: 'var(--bg)', borderRadius: 'var(--r-sm)', padding: '16px 20px', marginBottom: 20, textAlign: 'left' }}>
             <div className="profile-row">
               <span className="profile-label">주문번호</span>
               <span className="profile-value" style={{ fontFamily: 'monospace', fontSize: 13 }}>{orderId}</span>
+            </div>
+            <div className="profile-row">
+              <span className="profile-label">배송 방식</span>
+              <span className="profile-value">{deliveryOpt?.icon} {deliveryOpt?.label}</span>
             </div>
             <div className="profile-row">
               <span className="profile-label">결제수단</span>
@@ -54,12 +90,12 @@ export default function CheckoutModal({ cart, total, onClose }) {
             </div>
             <div className="profile-row" style={{ borderBottom: 'none' }}>
               <span className="profile-label">결제금액</span>
-              <span className="profile-value" style={{ color: 'var(--primary)', fontWeight: 700 }}>₩{total.toLocaleString()}</span>
+              <span className="profile-value" style={{ color: 'var(--primary)', fontWeight: 700 }}>₩{grandTotal.toLocaleString()}</span>
             </div>
           </div>
 
           <p style={{ fontSize: 13, color: 'var(--text-mid)', marginBottom: 24 }}>
-            영업일 기준 2~3일 내 배송 예정이에요 🚚
+            {arrivalText} 도착 예정이에요 {deliveryOpt?.icon}
           </p>
 
           <button type="button" className="modal-next-btn" onClick={onClose} style={{ width: '100%' }}>
@@ -79,9 +115,9 @@ export default function CheckoutModal({ cart, total, onClose }) {
         <h2 className="modal-title">주문 확인</h2>
         <p className="modal-subtitle">총 {itemCount}개 상품</p>
 
-        <div style={{ maxHeight: 180, overflowY: 'auto', marginBottom: 20 }}>
+        <div style={{ maxHeight: 150, overflowY: 'auto', marginBottom: 16 }}>
           {cart.map(item => (
-            <div key={item.cartId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border)', fontSize: 13 }}>
+            <div key={item.cartId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid var(--border)', fontSize: 13 }}>
               <span style={{ color: 'var(--text-dark)', flex: 1, marginRight: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.name.slice(0, 30)}
               </span>
@@ -92,13 +128,45 @@ export default function CheckoutModal({ cart, total, onClose }) {
           ))}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: 16, marginBottom: 24, padding: '12px 0', borderTop: '2px solid var(--text-dark)' }}>
-          <span>합계</span>
-          <span style={{ color: 'var(--primary)' }}>₩{total.toLocaleString()}</span>
+        <div style={{ fontSize: 13, marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-mid)', marginBottom: 4 }}>
+            <span>상품 금액</span><span>₩{total.toLocaleString()}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-mid)', marginBottom: 8 }}>
+            <span>배송비</span>
+            <span>{deliveryFee > 0 ? `₩${deliveryFee.toLocaleString()}` : '무료'}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: 16, paddingTop: 10, borderTop: '2px solid var(--text-dark)' }}>
+            <span>합계</span>
+            <span style={{ color: 'var(--primary)' }}>₩{grandTotal.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <p style={{ fontSize: 13, color: 'var(--text-mid)', marginBottom: 10 }}>배송 방식</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+          {DELIVERY_OPTIONS.map(opt => (
+            <div
+              key={opt.value}
+              className={`check-item ${delivery === opt.value ? 'checked' : ''}`}
+              style={{ justifyContent: 'space-between', padding: '12px 14px' }}
+              onClick={() => setDelivery(opt.value)}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20 }}>{opt.icon}</span>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13 }}>{opt.label}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-mid)', marginTop: 1 }}>{opt.desc} · {opt.sub}</div>
+                </div>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                {opt.fee > 0 ? `+₩${opt.fee.toLocaleString()}` : '무료'}
+              </span>
+            </div>
+          ))}
         </div>
 
         <p style={{ fontSize: 13, color: 'var(--text-mid)', marginBottom: 10 }}>결제 수단</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 28 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 24 }}>
           {PAYMENT_METHODS.map(m => (
             <div
               key={m.value}
@@ -115,7 +183,7 @@ export default function CheckoutModal({ cart, total, onClose }) {
         <div className="modal-nav">
           <button type="button" className="modal-back-btn" onClick={onClose}>취소</button>
           <button type="button" className="modal-next-btn" onClick={handlePay}>
-            ₩{total.toLocaleString()} 결제하기
+            ₩{grandTotal.toLocaleString()} 결제하기
           </button>
         </div>
       </div>
