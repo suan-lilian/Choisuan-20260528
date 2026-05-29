@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CartItem from './CartItem';
 import ChatAgent from './ChatAgent';
+import CheckoutModal from './CheckoutModal';
 
 function nowTime() {
   return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
@@ -8,6 +9,7 @@ function nowTime() {
 
 export default function CartPanel({ cart, onCartUpdate, userProfile, allProducts }) {
   const [activeTab, setActiveTab] = useState('cart');
+  const [showCheckout, setShowCheckout] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1, role: 'ai', time: nowTime(),
@@ -83,10 +85,18 @@ export default function CartPanel({ cart, onCartUpdate, userProfile, allProducts
                 <span className="cart-total-label">합계 ({itemCount}개)</span>
                 <span className="cart-total-price">₩{total.toLocaleString()}</span>
               </div>
-              <button type="button" className="checkout-btn">구매하기</button>
+              <button type="button" className="checkout-btn" onClick={() => setShowCheckout(true)}>구매하기</button>
             </div>
           )}
         </div>
+
+        {showCheckout && (
+          <CheckoutModal
+            cart={cart}
+            total={total}
+            onClose={() => setShowCheckout(false)}
+          />
+        )}
 
         <ChatAgent
           style={{ display: activeTab === 'chat' ? 'flex' : 'none' }}
