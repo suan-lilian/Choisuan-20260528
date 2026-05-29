@@ -26,12 +26,14 @@ export default function CartPanel({ cart, onCartUpdate, userProfile, allProducts
     <div className="cart-panel">
       <div className="cart-tabs">
         <button
+          type="button"
           className={`cart-tab ${activeTab === 'cart' ? 'active' : ''}`}
           onClick={() => setActiveTab('cart')}
         >
           🛒 AI 장바구니 {itemCount > 0 && `(${itemCount})`}
         </button>
         <button
+          type="button"
           className={`cart-tab ${activeTab === 'chat' ? 'active' : ''}`}
           onClick={() => setActiveTab('chat')}
         >
@@ -39,50 +41,52 @@ export default function CartPanel({ cart, onCartUpdate, userProfile, allProducts
         </button>
       </div>
 
-      {activeTab === 'cart' ? (
-        <>
-          <div className="cart-header">
-            <span className="ai-badge">🤖 AI 추천</span>
-            <span className="cart-header-title">맞춤 장바구니</span>
-            <span className="cart-header-count">상품 {cart.length}종</span>
-          </div>
-
-          {cart.length === 0 ? (
-            <div className="cart-empty">
-              <div className="cart-empty-icon">🛒</div>
-              <p>장바구니가 비어 있어요.<br />상품을 추가하거나 채팅으로<br />AI에게 구성을 요청해 보세요!</p>
+      <div className="cart-body">
+        {activeTab === 'cart' ? (
+          <>
+            <div className="cart-header">
+              <span className="ai-badge">🤖 AI 추천</span>
+              <span className="cart-header-title">맞춤 장바구니</span>
+              <span className="cart-header-count">상품 {cart.length}종</span>
             </div>
-          ) : (
-            <div className="cart-list">
-              {cart.map(item => (
-                <CartItem
-                  key={item.cartId}
-                  item={item}
-                  onQuantityChange={handleQuantityChange}
-                  onRemove={handleRemove}
-                />
-              ))}
-            </div>
-          )}
 
-          {cart.length > 0 && (
-            <div className="cart-footer">
-              <div className="cart-total-row">
-                <span className="cart-total-label">합계 ({itemCount}개)</span>
-                <span className="cart-total-price">₩{total.toLocaleString()}</span>
+            {cart.length === 0 ? (
+              <div className="cart-empty">
+                <div className="cart-empty-icon">🛒</div>
+                <p>장바구니가 비어 있어요.<br />상품을 추가하거나 채팅으로<br />AI에게 구성을 요청해 보세요!</p>
               </div>
-              <button className="checkout-btn">구매하기</button>
-            </div>
-          )}
-        </>
-      ) : (
-        <ChatAgent
-          cart={cart}
-          onCartUpdate={onCartUpdate}
-          userProfile={userProfile}
-          allProducts={allProducts}
-        />
-      )}
+            ) : (
+              <div className="cart-list">
+                {cart.map(item => (
+                  <CartItem
+                    key={item.cartId}
+                    item={item}
+                    onQuantityChange={handleQuantityChange}
+                    onRemove={handleRemove}
+                  />
+                ))}
+              </div>
+            )}
+
+            {cart.length > 0 && (
+              <div className="cart-footer">
+                <div className="cart-total-row">
+                  <span className="cart-total-label">합계 ({itemCount}개)</span>
+                  <span className="cart-total-price">₩{total.toLocaleString()}</span>
+                </div>
+                <button type="button" className="checkout-btn">구매하기</button>
+              </div>
+            )}
+          </>
+        ) : (
+          <ChatAgent
+            cart={cart}
+            onCartUpdate={onCartUpdate}
+            userProfile={userProfile}
+            allProducts={allProducts}
+          />
+        )}
+      </div>
     </div>
   );
 }

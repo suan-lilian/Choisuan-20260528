@@ -221,6 +221,11 @@ a { text-decoration: none; }
   flex: 1; min-height: 0; overflow: hidden;
 }
 .cart-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.cart-body {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
 .cart-tab {
   flex: 1; padding: 14px;
   font-size: 13px; font-weight: 600; color: var(--text-light);
