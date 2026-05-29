@@ -14,13 +14,7 @@ function nowTime() {
   return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 }
 
-export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts }) {
-  const [messages, setMessages] = useState([
-    {
-      id: 1, role: 'ai', time: nowTime(),
-      text: `안녕하세요! 오늘 맞춤 장바구니를 미리 구성해 두었어요 🛒\n\n${cart.length}가지 상품을 골랐습니다. 마음에 안 드시면 편하게 말씀해 주세요!`,
-    },
-  ]);
+export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts, messages, setMessages, style }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesRef = useRef(null);
@@ -75,7 +69,7 @@ export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts
   };
 
   return (
-    <div className="chat-agent">
+    <div className="chat-agent" style={style}>
       <div className="chat-messages" ref={messagesRef}>
         {messages.map(msg => (
           <div key={msg.id} className={`chat-msg ${msg.role}`}>
