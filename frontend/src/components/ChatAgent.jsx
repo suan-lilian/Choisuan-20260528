@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { getMockAIResponse } from '../utils/aiCartUtils';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
 const SUGGESTIONS = [
   '냉면 재료로 다시 짜줘',
   '계란 다른 걸로 바꿔줘',
@@ -14,16 +12,6 @@ const SUGGESTIONS = [
 
 function nowTime() {
   return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-}
-
-async function callChatAPI(message, cart, profile) {
-  const res = await fetch(`${API_URL}/api/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, cart, profile }),
-  });
-  if (!res.ok) throw new Error('API error');
-  return res.json();
 }
 
 export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts }) {
@@ -45,43 +33,36 @@ export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts
     const trimmed = text.trim();
     if (!trimmed || loading) return;
 
-    const userMsg = { id: Date.now(), role: 'user', time: nowTime(), text: trimmed };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages(prev => [...prev, { id: Date.now(), role: 'user', time: nowTime(), text: trimmed }]);
     setInput('');
     setLoading(true);
 
+    let responseMessage;
+    let newCart = cart;
+
     try {
-      let responseMessage;
-      let newCart = cart;
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmed, cart, profile: userProfile }),
+      });
 
-      if (API_URL || window.location.hostname !== 'localhost') {
-        // Use real ChatGPT API
-        const result = await callChatAPI(trimmed, cart, userProfile);
-        responseMessage = result.message;
-        newCart = result.cart;
-      } else {
-        // Fallback: mock AI for local dev without backend
-        await new Promise(r => setTimeout(r, 900));
-        responseMessage = getMockAIResponse(trimmed, allProducts, userProfile, cart, (c) => { newCart = c; });
-      }
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      responseMessage = data.message;
+      newCart = data.cart;
 
-      onCartUpdate(newCart);
-      setMessages(prev => [
-        ...prev,
-        { id: Date.now() + 1, role: 'ai', time: nowTime(), text: responseMessage },
-      ]);
-    } catch (err) {
-      // Fallback to mock on API error
-      let newCart = cart;
-      const responseMessage = getMockAIResponse(trimmed, allProducts, userProfile, cart, (c) => { newCart = c; });
-      onCartUpdate(newCart);
-      setMessages(prev => [
-        ...prev,
-        { id: Date.now() + 1, role: 'ai', time: nowTime(), text: responseMessage },
-      ]);
-    } finally {
-      setLoading(false);
+    } catch {
+      // fallback to mock when API not available (local dev without backend)
+      responseMessage = getMockAIResponse(trimmed, allProducts, userProfile, cart, c => { newCart = c; });
     }
+
+    onCartUpdate(newCart);
+    setMessages(prev => [
+      ...prev,
+      { id: Date.now() + 1, role: 'ai', time: nowTime(), text: responseMessage },
+    ]);
+    setLoading(false);
   };
 
   const handleKeyDown = (e) => {
