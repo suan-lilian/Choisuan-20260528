@@ -23,10 +23,12 @@ export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const bottomRef = useRef(null);
+  const messagesRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const send = async (text) => {
@@ -74,7 +76,7 @@ export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts
 
   return (
     <div className="chat-agent">
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messagesRef}>
         {messages.map(msg => (
           <div key={msg.id} className={`chat-msg ${msg.role}`}>
             <div className="chat-msg-row">
@@ -97,7 +99,6 @@ export default function ChatAgent({ cart, onCartUpdate, userProfile, allProducts
             </div>
           </div>
         )}
-        <div ref={bottomRef} />
       </div>
 
       <div className="chat-suggestions">
