@@ -114,7 +114,7 @@ Vercel 프로젝트 설정:
 - Framework Preset: Vite
 - Environment Variable: `OPENAI_API_KEY`
 
-##과제 구현 설명
+## 과제 구현 설명
 
 - 과제1 MVP 내용을 Claude에게 txt로 정리를 부탁한 다음 md파일로 넣어두었습니다.
 - Claude code를 사용하였으며, bkit를 활용하였습니다.
