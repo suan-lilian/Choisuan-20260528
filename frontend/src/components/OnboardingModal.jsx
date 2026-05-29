@@ -265,7 +265,7 @@ export default function OnboardingModal({ onComplete }) {
           </>
         )}
 
-        <div className="modal-nav">
+        <div className="modal-nav" style={{ marginTop: 24 }}>
           {step > 0 && (
             <button type="button" className="modal-back-btn" onClick={() => setStep(s => s - 1)}>
               ← 이전
