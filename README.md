@@ -4,7 +4,10 @@ AI가 사용자 성향을 파악하여 장바구니를 자동으로 구성하고
 
 ## 데모
 
-https://choisuan-20260528.vercel.app
+- **프론트엔드:** https://choisuan-20260528.vercel.app
+- **백엔드 API:** https://choisuan-20260528.onrender.com
+
+> Render 무료 플랜 사용으로 15분 비활성 시 슬립됩니다. 첫 채팅 응답은 최대 60초 소요될 수 있습니다.
 
 ## 핵심 기능
 
@@ -30,13 +33,13 @@ https://choisuan-20260528.vercel.app
 
 ## 기술 스택
 
-| 구분         | 기술                                 |
-| ------------ | ------------------------------------ |
-| Frontend     | React 19, Vite                       |
-| Backend (AI) | Vercel Serverless Function (Node.js) |
-| AI           | OpenAI GPT-4o-mini                   |
-| 데이터       | 네이버 쇼핑 크롤링 (Cheerio + Axios) |
-| 호스팅       | Vercel                               |
+| 구분       | 기술                                 |
+| ---------- | ------------------------------------ |
+| Frontend   | React 19, Vite                       |
+| Backend    | Node.js, Express                     |
+| AI         | OpenAI GPT-4o-mini (ChatGPT API)     |
+| 데이터     | 네이버 쇼핑 크롤링 (Axios)           |
+| 호스팅     | Vercel (프론트), Render (백엔드)     |
 
 ## 프로젝트 구조
 
@@ -57,8 +60,9 @@ https://choisuan-20260528.vercel.app
 │       │   └── ChatAgent.jsx
 │       └── utils/
 │           └── aiCartUtils.js  # AI 장바구니 로직
-├── backend/                # 백엔드 (로컬 개발용 Express)
+├── backend/                # Node.js Express 백엔드 (Render 배포)
 │   ├── server.js
+│   ├── render.yaml
 │   └── data/products.json
 └── product-crawl/          # 크롤링 스크립트
     ├── crawl.js
@@ -75,7 +79,7 @@ npm install
 npm run dev
 ```
 
-### 백엔드 (로컬 ChatGPT API 테스트용)
+### 백엔드
 
 ```bash
 cd backend
@@ -95,24 +99,25 @@ node crawl.js
 
 ## 환경 변수
 
-| 변수명           | 설명                                    |
-| ---------------- | --------------------------------------- |
-| `OPENAI_API_KEY` | OpenAI API 키 (Vercel 환경 변수로 설정) |
+| 변수명           | 위치    | 설명                          |
+| ---------------- | ------- | ----------------------------- |
+| `OPENAI_API_KEY` | 백엔드  | OpenAI API 키 (Render 환경변수) |
+| `VITE_API_URL`   | 프론트  | 백엔드 URL (Vercel 환경변수)  |
 
 ## 배포
 
-Vercel에 `frontend/` 디렉토리를 루트로 설정하여 배포합니다.
+### 백엔드 (Render)
 
-```bash
-cd frontend
-vercel --prod
-```
+- Root Directory: `backend`
+- Build Command: `npm install`
+- Start Command: `node server.js`
+- Environment Variable: `OPENAI_API_KEY`
 
-Vercel 프로젝트 설정:
+### 프론트엔드 (Vercel)
 
 - Root Directory: `frontend`
 - Framework Preset: Vite
-- Environment Variable: `OPENAI_API_KEY`
+- Environment Variable: `VITE_API_URL` = Render 백엔드 URL
 
 ## 과제 구현 설명
 
